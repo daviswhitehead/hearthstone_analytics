@@ -1,2 +1,2 @@
-[HearthstoneJSON](https://hearthstonejson.com/docs/cards.html)
-[HearthstoneSim](https://hearthsim.info/)
+[HearthstoneJSON](https://hearthstonejson.com/docs/cards.html)  
+[HearthstoneSim](https://hearthsim.info/)  
