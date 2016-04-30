@@ -1,3 +1,2 @@
-# hearthstone_analytics
-
-[hearthstoneJSON](https://hearthstonejson.com/docs/cards.html)
+[HearthstoneJSON](https://hearthstonejson.com/docs/cards.html)
+[HearthstoneSim](https://hearthsim.info/)
