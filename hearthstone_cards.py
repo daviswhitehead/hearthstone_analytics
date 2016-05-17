@@ -33,7 +33,6 @@ def find_uniques(data):
 	key value pairs.
 	"""
 
-	print 'finding uniques...'
 	d = defaultdict(set)
 	for i in data:
 		for k, v in i.iteritems():
@@ -69,11 +68,15 @@ def create_dataframe(data, unique_mechanics):
 		d[idx]['cost'] = data_formatter(row_data.get('cost', ''))
 		d[idx]['attack'] = data_formatter(row_data.get('attack', ''))
 		d[idx]['health'] = data_formatter(row_data.get('health', ''))
+		d[idx]['text'] = data_formatter(row_data.get('text', ''))
 		d[idx]['durability'] = data_formatter(row_data.get('durability', 0))
 		d[idx]['spellDamage'] = data_formatter(row_data.get('spellDamage', 0))
 		d[idx]['overload'] = data_formatter(row_data.get('overload', 0))
+		row_mechanics = [
+			data_formatter(x) for x in row_data.get('mechanics', [])
+		]
 		for mechanic in unique_mechanics:
-			d[idx][data_formatter(mechanic)] = data_formatter(row_data.get(mechanic, 0))
+			d[idx][data_formatter(mechanic)] = 1 if mechanic in row_mechanics else 0
 
 	return pd.DataFrame.from_dict(d, orient='index')
 
@@ -84,23 +87,11 @@ def main():
 
 	# uniqueify cards data
 	cards_uniqued = find_uniques(cards)
-	print 'unique_mechanics'
 	unique_mechanics = dict(cards_uniqued)['mechanics']
-	print unique_mechanics
-	# set([u'enraged', u'ai_must_play', u'inspire', u'freeze', u'divine_shield', u'immunetospellpower', u'adjacent_buff', u'choose_one', u'poisonous', u'charge', u'secret', u'invisibledeathrattle', u'combo', u'taunt', u'topdeck', u'forgetful', u'deathrattle', u'stealth', u'morph', u'ritual', u'windfury', u'tag_one_turn_effect', u'evil_glow', u'aura', u'battlecry', u'silence'])
-	print 'unique types:'
-	print dict(cards_uniqued)['type']
-	# set([u'hero_power', u'hero', u'minion', u'weapon', u'spell', u'enchantment'])
 
 	# create dataframes
 	df_cards = create_dataframe(cards, unique_mechanics)
-	df_minions = df_cards[df_cards['type'] == 'minion']
-	pdb.set_trace()
-	print 'cards'
-	print df_cards[['type']].sample(10)
-	print 'minions'
-	print df_minions.sample(10)
-
+	df_cards.to_csv('clean_cards.csv', sep='\t', encoding='utf-8')
 
 if __name__ == '__main__':
 	main()

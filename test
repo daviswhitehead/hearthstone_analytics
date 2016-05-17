@@ -1,0 +1,5 @@
+wdir = '/Users/dwhitehead/Documents/github/hearthstone_analytics/'
+
+filename = wdir + 'clean_cards.csv'
+df_cards = pd.DataFrame.from_csv(filename, sep='\t', encoding='utf-8')
+df_minions = df_cards[df_cards['type'].isin(['minion'])]
