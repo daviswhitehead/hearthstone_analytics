@@ -5,7 +5,11 @@ import ujson as json
 import pandas as pd
 import pdb
 from collections import defaultdict
+from collections import Counter
 import pprint
+
+
+def
 
 
 def recursive_finder(d, k, v):
@@ -54,6 +58,10 @@ def create_dataframe(data, unique_mechanics):
 	The values of top level keys are a nested dictionary containing
 	row data.
 	"""
+	words = Counter()
+	bigrams = Counter()
+	trigrams = Counter()
+	quadgrams = Counter()
 
 	d = defaultdict(dict)
 	for idx, row_data in enumerate(data):
@@ -69,6 +77,7 @@ def create_dataframe(data, unique_mechanics):
 		d[idx]['attack'] = data_formatter(row_data.get('attack', ''))
 		d[idx]['health'] = data_formatter(row_data.get('health', ''))
 		d[idx]['text'] = data_formatter(row_data.get('text', ''))
+		d[idx]['collectible'] = data_formatter(row_data.get('collectible', ''))
 		d[idx]['durability'] = data_formatter(row_data.get('durability', 0))
 		d[idx]['spellDamage'] = data_formatter(row_data.get('spellDamage', 0))
 		d[idx]['overload'] = data_formatter(row_data.get('overload', 0))
@@ -78,19 +87,42 @@ def create_dataframe(data, unique_mechanics):
 		for mechanic in unique_mechanics:
 			d[idx][data_formatter(mechanic)] = 1 if mechanic in row_mechanics else 0
 
+		text = row_data.get('text', '').split(' ')
+		words = list_item_frequencies(words, text)
+		bigrams = list_item_frequencies(bigrams, find_ngrams(text, 2))
+		trigrams = list_item_frequencies(trigrams, find_ngrams(text, 3))
+		quadgrams = list_item_frequencies(quadgrams, find_ngrams(text, 4))
+	print words.most_common(100)
+	print bigrams.most_common(100)
+	print trigrams.most_common(100)
+	print quadgrams.most_common(100)
+
 	return pd.DataFrame.from_dict(d, orient='index')
+
+
+def find_ngrams(input_list, n):
+	return zip(*[input_list[i:] for i in range(n)])
+
+
+def list_item_frequencies(counter, items):
+	for item in items:
+		counter[item] += 1
+
+	return counter
 
 
 def main():
 	# load cards data
-	cards = json.loads(open('data/cards.txt', 'r').read())
+	# cards = json.loads(open('data/cards.collectible.txt', 'r').read())
+	cards_collectible = json.loads(open('data/cards.collectible.txt', 'r').read())
 
 	# uniqueify cards data
-	cards_uniqued = find_uniques(cards)
+	cards_uniqued = find_uniques(cards_collectible)
 	unique_mechanics = dict(cards_uniqued)['mechanics']
+	print unique_mechanics
 
 	# create dataframes
-	df_cards = create_dataframe(cards, unique_mechanics)
+	df_cards = create_dataframe(cards_collectible, unique_mechanics)
 	df_cards.to_csv('clean_cards.csv', sep='\t', encoding='utf-8')
 
 if __name__ == '__main__':
